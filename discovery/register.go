@@ -20,6 +20,7 @@ func (d *Discovery) Register(c context.Context, ins *model.Instance, latestTimes
 
 // Renew marks the given instance of the given app name as renewed, and also marks whether it originated from replication.
 func (d *Discovery) Renew(c context.Context, arg *model.ArgRenew) (i *model.Instance, err error) {
+	//
 	i, ok := d.registry.Renew(arg)
 	if !ok {
 		err = ecode.NothingFound
@@ -30,6 +31,7 @@ func (d *Discovery) Renew(c context.Context, arg *model.ArgRenew) (i *model.Inst
 		_ = d.nodes.Load().(*registry.Nodes).Replicate(c, model.Renew, i, arg.Zone != d.c.Env.Zone)
 		return
 	}
+
 	if arg.DirtyTimestamp > i.DirtyTimestamp {
 		err = ecode.NothingFound
 	} else if arg.DirtyTimestamp < i.DirtyTimestamp {

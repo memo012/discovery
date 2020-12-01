@@ -27,9 +27,13 @@ func New(c *conf.Config) (d *Discovery, cancel context.CancelFunc) {
 		client:    http.NewClient(c.HTTPClient),
 		registry:  registry.NewRegistry(c),
 	}
+	// 读取配置 初始化对等节点(Node/Nodes)
 	d.nodes.Store(registry.NewNodes(c))
+	// 自发现1 拉去discovery集群其他discovery节点信息
 	d.syncUp()
+	// 自发现2 注册自己
 	cancel = d.regSelf()
+	// 自发现3 遵循增量拉取discovery集群其他discovery节点信息
 	go d.nodesproc()
 	go d.exitProtect()
 	return

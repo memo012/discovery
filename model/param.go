@@ -19,12 +19,19 @@ type ArgRegister struct {
 
 // ArgRenew define renew params.
 type ArgRenew struct {
+	// 机房服务地区标识 用于多机房部署区分数据中心
 	Zone           string `form:"zone" validate:"required"`
+	// 环境信息
 	Env            string `form:"env" validate:"required"`
+	// 服务唯一标识
 	AppID          string `form:"appid" validate:"required"`
+	// instance主机标识
 	Hostname       string `form:"hostname" validate:"required"`
+	//
 	Replication    bool   `form:"replication"`
+	// 最新时间戳
 	DirtyTimestamp int64  `form:"dirty_timestamp"`
+	// 来自那个机房服务地区
 	FromZone       bool   `form:"from_zone"`
 }
 

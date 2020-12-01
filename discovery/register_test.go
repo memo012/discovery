@@ -114,11 +114,15 @@ func TestRegister(t *testing.T) {
 		defer cancel()
 		svr.client.SetTransport(gock.DefaultTransport)
 		svr.syncUp()
+		// 初始化 instance
 		i := model.NewInstance(reg)
+		// 注册
 		svr.Register(context.TODO(), i, reg.LatestTimestamp, reg.Replication, true)
+		// 拉取 instance
 		ins, err := svr.Fetch(context.TODO(), fet)
 		So(err, ShouldBeNil)
 		So(len(ins.Instances), ShouldResemble, 1)
+		// 测试比对
 		Convey("test metadta", func() {
 			for _, is := range ins.Instances {
 				So(err, ShouldBeNil)
