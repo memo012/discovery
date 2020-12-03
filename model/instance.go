@@ -47,7 +47,7 @@ type Instance struct {
 	Region   string            `json:"region"`
 	Zone     string            `json:"zone"`
 	Env      string            `json:"env"`
-	AppID    string            `json:"appid"`
+	AppID    string            `json:"appid"` // 服务名标识
 	Hostname string            `json:"hostname"`
 	Addrs    []string          `json:"addrs"`
 	Version  string            `json:"version"`
@@ -62,7 +62,7 @@ type Instance struct {
 	RenewTimestamp int64 `json:"renew_timestamp"`
 	DirtyTimestamp int64 `json:"dirty_timestamp"`
 
-	LatestTimestamp int64 `json:"latest_timestamp"`
+	LatestTimestamp int64 `json:"latest_timestamp"` // 服务最新更新时间
 }
 
 // NewInstance new a instance.
@@ -255,8 +255,11 @@ func (a *App) Instances() (is []*Instance) {
 func (a *App) NewInstance(ni *Instance, latestTime int64) (i *Instance, ok bool) {
 	i = new(Instance)
 	a.lock.Lock()
+	// instance 相关信息
+	// oi -- 旧instance数据
 	oi, ok := a.instances[ni.Hostname]
 	if ok {
+		// 注册中心存在 该instance
 		ni.UpTimestamp = oi.UpTimestamp
 		if ni.DirtyTimestamp < oi.DirtyTimestamp {
 			log.Warn("register exist(%v) dirty timestamp over than caller(%v)", oi, ni)
@@ -264,6 +267,7 @@ func (a *App) NewInstance(ni *Instance, latestTime int64) (i *Instance, ok bool)
 		}
 	}
 	a.instances[ni.Hostname] = ni
+	//
 	a.updateLatest(latestTime)
 	*i = *ni
 	a.lock.Unlock()

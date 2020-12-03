@@ -94,13 +94,20 @@ func (r *Registry) newApp(ins *model.Instance) (a *model.App) {
 }
 
 // Register a new instance.
+// ins: 注册新instance
+// latestTime: 注册instance时间戳
 func (r *Registry) Register(ins *model.Instance, latestTime int64) (err error) {
 	a := r.newApp(ins)
+	// 向注册中心 注册 instance
 	i, ok := a.NewInstance(ins, latestTime)
+	// ok: true  -- 注册中心不存在该instance
+	// ok: false -- 注册中心存在该instance
 	if ok {
+		// 新增 过期时间
 		r.gd.incrExp()
 	}
 	// NOTE: make sure free poll before update appid latest timestamp.
+	// 进行instance广播
 	r.broadcast(i.Env, i.AppID)
 	return
 }
@@ -245,6 +252,7 @@ func (r *Registry) Polls(arg *model.ArgPolls) (ch chan map[string]*model.Instanc
 func (r *Registry) broadcast(env, appid string) {
 	key := pollKey(env, appid)
 	r.cLock.Lock()
+	//
 	conns, ok := r.conns[key]
 	if !ok {
 		r.cLock.Unlock()
@@ -254,6 +262,7 @@ func (r *Registry) broadcast(env, appid string) {
 	r.cLock.Unlock()
 	conns.hclock.RLock()
 	for _, conn := range conns.hosts {
+		// 拉取instance
 		ii, err := r.Fetch(conn.arg.Zone, env, appid, 0, model.InstanceStatusUP) // TODO(felix): latesttime!=0 increase
 		if err != nil {
 			// may be not found ,just continue until next poll return err.
