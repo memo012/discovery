@@ -59,7 +59,7 @@ func defRegisArg() *model.ArgRegister {
 		Env:             "pre",
 		Status:          1,
 		Metadata:        `{"test":"test","weight":"10"}`,
-		LatestTimestamp: time.Now().UnixNano(),
+		LatestTimestamp: time.Now().UnixNano(), // 时间戳
 	}
 }
 func defRegDiscovery() *model.Instance {

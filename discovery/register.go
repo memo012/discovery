@@ -11,8 +11,13 @@ import (
 )
 
 // Register a new instance.
+// latestTimestamp: 时间戳
+// replication: 是否集群
+// fromzone: 是否多分区
 func (d *Discovery) Register(c context.Context, ins *model.Instance, latestTimestamp int64, replication bool, fromzone bool) {
+	// 注册 instance
 	_ = d.registry.Register(ins, latestTimestamp)
+	// 集群 同步数据
 	if !replication {
 		_ = d.nodes.Load().(*registry.Nodes).Replicate(c, model.Register, ins, fromzone)
 	}
