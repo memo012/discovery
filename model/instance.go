@@ -256,7 +256,7 @@ func (a *App) NewInstance(ni *Instance, latestTime int64) (i *Instance, ok bool)
 	i = new(Instance)
 	a.lock.Lock()
 	// instance 相关信息
-	// oi -- 旧instance数据
+	// oi -- 注册中心是否存在 ni  instance
 	oi, ok := a.instances[ni.Hostname]
 	if ok {
 		// 注册中心存在 该instance
@@ -267,7 +267,7 @@ func (a *App) NewInstance(ni *Instance, latestTime int64) (i *Instance, ok bool)
 		}
 	}
 	a.instances[ni.Hostname] = ni
-	//
+	// 最新的时间戳
 	a.updateLatest(latestTime)
 	*i = *ni
 	a.lock.Unlock()
